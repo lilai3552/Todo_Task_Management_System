@@ -13,7 +13,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("select t.category.id, count(t) from Task t group by t.category.id")
     List<Object[]> countByCategory();
 
-    // 新增：按“分类名称”做聚合（包含没有分类的任务，名称显示为 '—'）
+
     @Query("select coalesce(c.name, '—') as catName, count(t) " +
             "from Task t left join t.category c " +
             "group by c.name " +

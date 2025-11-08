@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-// controller/StatisticsController.java
+
 @RestController
 @RequestMapping("/api/statistics") @RequiredArgsConstructor
 public class StatisticsController {

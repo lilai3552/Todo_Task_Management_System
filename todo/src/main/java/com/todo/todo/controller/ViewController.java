@@ -46,20 +46,18 @@ public class ViewController {
     /** 统计页 */
     @GetMapping("/stats")
     public String statsPage() {
-        return "stats"; // 对应 templates/stats.html（前端用 fetch 拉 /api/statistics/overview）
+        return "stats";
     }
 
-    /*Completed Page*/
+
     @GetMapping("/completed")
     public String completedTasks(Model model) {
-        // 复用现有 service，只拿已完成任务
         model.addAttribute("tasks", todoService.listAll());
         model.addAttribute("categories", categoryService.list());
-        return "completed"; // 对应 completed.html
+        return "completed";
     }
 
 
-    /** 表单创建任务（x-www-form-urlencoded） */
     @PostMapping(path = "/ui/tasks", consumes = "application/x-www-form-urlencoded")
     public String createFromForm(@RequestParam String title,
                                  @RequestParam(required = false) String detail,

@@ -22,10 +22,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         long total = all.size();
         long done  = all.stream().filter(Task::isCompleted).count();
 
-        // 用“分类名 → 数量”
+
         Map<String, Long> byCat = new LinkedHashMap<>();
         for (Object[] r : taskRepo.countByCategoryName()) {
-            String name = (String) r[0];   // 分类名（可能为 '—'）
+            String name = (String) r[0];
             Long   cnt  = (Long)   r[1];
             byCat.put(name, cnt);
         }
