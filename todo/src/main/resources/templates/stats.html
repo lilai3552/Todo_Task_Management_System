@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>To-Do | Statistics</title>
+    <style>
+        body{font-family: Arial, Helvetica, sans-serif;}
+        header{display:flex;justify-content:space-between;align-items:center;margin:12px 0;}
+        .brand{font-size:28px;font-weight:700;}
+        nav a, nav button{margin-left:8px;}
+        .card { border:1px solid #ddd; padding:12px; margin:12px 0; border-radius:8px; width:760px;}
+        .kpis { display:flex; gap:16px; flex-wrap:wrap; }
+        .kpi  { padding:10px 14px; border:1px solid #eee; border-radius:8px; min-width:140px; }
+        table { border-collapse: collapse; width: 760px; }
+        th, td { border:1px solid #555; padding:8px 10px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">To-Do</div>
+    <nav>
+        <a href="/tasks"><button type="button">Back to Tasks</button></a>
+    </nav>
+</header>
+
+<div class="card">
+    <h2>Overview</h2>
+    <div id="overview-kpis" class="kpis">
+        <div class="kpi"><div>Total</div><b id="kpi-total">—</b></div>
+        <div class="kpi"><div>Completed</div><b id="kpi-completed">—</b></div>
+        <div class="kpi"><div>Pending</div><b id="kpi-pending">—</b></div>
+        <div class="kpi"><div>Completion Rate</div><b id="kpi-rate">—</b></div>
+    </div>
+</div>
+
+<div class="card">
+    <h3>By Category</h3>
+    <table id="bycat">
+        <thead>
+        <tr><th>Category</th><th>Count</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    (function loadStats(){
+      fetch('/api/statistics/overview')
+        .then(r => r.json())
+        .then(d => {
+          // KPIs
+          document.getElementById('kpi-total').textContent     = d.total;
+          document.getElementById('kpi-completed').textContent = d.completed;
+          document.getElementById('kpi-pending').textContent   = d.pending;
+          document.getElementById('kpi-rate').textContent      = Math.round(d.completionRate * 100) + '%';
+
+          // By Category
+          const tbody = document.querySelector('#bycat tbody');
+          tbody.innerHTML = '';
+          const entries = Object.entries(d.byCategory || {});
+          if(entries.length === 0){
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="2">No data</td>';
+            tbody.appendChild(tr);
+          } else {
+            entries.forEach(([name, cnt]) => {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `<td>${name}</td><td>${cnt}</td>`;
+              tbody.appendChild(tr);
+            });
+          }
+        })
+        .catch(() => {
+          document.querySelector('.card').insertAdjacentHTML('beforeend',
+            '<div style="color:#c00;">Failed to load statistics.</div>');
+        });
+    })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>To-Do | Tasks</title>
+    <style>
+        body{font-family: Arial, Helvetica, sans-serif;}
+        header{display:flex;justify-content:space-between;align-items:center;margin:12px 0;}
+        .brand{font-size:28px;font-weight:700;}
+        nav a, nav button{margin-left:8px;}
+        .card { border:1px solid #ddd; padding:12px; margin:12px 0; border-radius:8px; }
+        table { border-collapse: collapse; width: 760px; }
+        th, td { border:1px solid #555; padding:8px 10px; }
+        .msg {background:#e6ffed;border:1px solid #b7eb8f;padding:8px;margin-bottom:12px;width:760px;}
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">To-Do</div>
+    <nav>
+        <a href="/tasks">Tasks</a>
+        <a href="/stats"><button type="button">View Status</button></a>
+    </nav>
+</header>
+
+<div th:if="${msg}" class="msg">
+    <span th:text="${msg}"></span>
+</div>
+
+<h2>Tasks</h2>
+<table>
+    <tr>
+        <th>No.</th><th>Title</th><th>Category</th><th>Due At</th><th>Completed</th><th>Actions</th>
+    </tr>
+    <tr th:each="t, stat : ${tasks}">
+        <td th:text="${stat.count}">1</td>
+        <td th:text="${t.title}">Sample</td>
+        <td th:text="${t.category != null ? t.category.name : '—'}">—</td>
+        <td th:text="${t.dueAt != null ? t.dueAt : '—'}">—</td>
+        <td th:text="${t.completed}">false</td>
+        <td>
+            <!-- 完成/取消完成 -->
+            <form th:action="@{|/api/tasks/${t.id}/completed|}" method="post" style="display:inline-block;">
+                <input type="hidden" name="_method" value="patch"/>
+                <input type="hidden" name="value" th:value="${!t.completed}"/>
+                <button type="submit" th:text="${t.completed ? 'Uncomplete' : 'Complete'}">Complete</button>
+            </form>
+            <!-- 删除 -->
+            <form th:action="@{|/api/tasks/${t.id}|}" method="post" onsubmit="return confirm('Delete?')" style="display:inline-block;">
+                <input type="hidden" name="_method" value="delete"/>
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<h3>Create Task</h3>
+<form action="/ui/tasks" method="post">
+    <input name="title"  placeholder="title" required />
+    <input name="detail" placeholder="detail" />
+    <select name="categoryId">
+        <option value="">--No Category--</option>
+        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
+    </select>
+    <input type="datetime-local" name="dueAt" />
+    <button type="submit">Add</button>
+</form>
+
+<script>
+    // 让 _method 表单“伪装”为 PATCH/DELETE
+    document.querySelectorAll('form').forEach(f=>{
+      if(f.querySelector('input[name="_method"]')){
+        f.addEventListener('submit', e=>{
+          e.preventDefault();
+          const method=f.querySelector('input[name="_method"]').value.toUpperCase();
+          const url=f.getAttribute('action');
+          const data=new FormData(f);
+          if(method==='PATCH'){
+            fetch(url+'?'+new URLSearchParams(data).toString(),{method:'PATCH'}).then(()=>location.reload());
+          }else if(method==='DELETE'){
+            fetch(url,{method:'DELETE'}).then(()=>location.reload());
+          }
+        });
+      }
+    });
+</script>
+
+</body>
+</html>

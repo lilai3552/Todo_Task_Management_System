@@ -16,9 +16,10 @@ public class Task {
     @Column(nullable=false, length=120) private String title;
     @Column(length=500) private String detail;
     private boolean completed;
-    private LocalDateTime due_date;
+    private LocalDateTime dueAt;
+    private LocalDateTime createdAt;
 
-    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="category_id")
+    @ManyToOne(fetch=FetchType.EAGER) @JoinColumn(name="category_id")
     private Category category;
 }
 
