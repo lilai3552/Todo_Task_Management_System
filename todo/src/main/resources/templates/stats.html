@@ -3,59 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <title>To-Do | Statistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Arimo:400,700" rel="stylesheet">
     <style>
-        body{font-family: Arial, Helvetica, sans-serif;}
-        header{display:flex;justify-content:space-between;align-items:center;margin:12px 0;}
-        .brand{font-size:28px;font-weight:700;}
-        nav a, nav button{margin-left:8px;}
-        .card { border:1px solid #ddd; padding:12px; margin:12px 0; border-radius:8px; width:760px;}
+        body { background:#fafafa; }
+        .wrapper { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+
+        header { background:#fff; border-bottom:1px solid #eee; }
+        .header-inner { display:flex; align-items:center; justify-content:space-between; padding:18px 0; }
+        .brand { display:flex; align-items:center; }
+        .brand-icon { height:32px; width:auto; margin-right:40px; border-radius:6px; display:block; }
+        .brand a { text-decoration:none; color:#333; font-size:28px; font-weight:700; }
+
+        #navigation { display:flex; gap:10px; }
+        .nav-btn { display:inline-block; padding:10px 18px; border-radius:999px; font-weight:700; letter-spacing:.03em;
+          background:#2f7d5e; color:#fff; border:2px solid #2f7d5e; text-transform:uppercase; }
+        .nav-btn--active { background:#eaf7f1; color:#2d6a4f; border-color:#5dae87; }
+
+        .section-card { background:#fff; border:1px solid #eee; border-radius:12px; padding:20px; margin:24px 0; box-shadow:0 2px 10px rgba(0,0,0,.03); }
         .kpis { display:flex; gap:16px; flex-wrap:wrap; }
-        .kpi  { padding:10px 14px; border:1px solid #eee; border-radius:8px; min-width:140px; }
-        table { border-collapse: collapse; width: 760px; }
-        th, td { border:1px solid #555; padding:8px 10px; }
+        .kpi  { flex:1 1 180px; padding:14px 16px; border:1px solid #f0f0f0; border-radius:10px; background:#fcfffd; }
+        .kpi b { font-size:28px; display:block; margin-top:6px; color:#333; }
+
+        table { width:100%; border-collapse: collapse; background:#fff; }
+        th, td { padding:12px 14px; border-bottom:1px solid #eee; text-align:left; }
+        th { background:#f8f9fb; font-weight:700; color:#444; }
+
+        .pill-title{ display:inline-block; padding:6px 14px; border-radius:999px; background:#eaf7f1; border:1px solid #c7ead8; color:#2d6a4f; font-weight:700; font-size:28px; line-height:1.2; }
+        .section-card h2, .section-card h3 { margin:0 0 12px 0; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand">To-Do</div>
-    <nav>
-        <a href="/tasks"><button type="button">Back to Tasks</button></a>
-    </nav>
+    <div class="wrapper header-inner">
+        <div class="brand">
+            <img src="/images/logo.png" alt="logo" class="brand-icon">
+            <h1 style="margin:0;"><a href="/tasks">To-Do</a></h1>
+        </div>
+        <nav>
+            <ul id="navigation">
+                <li><a class="nav-btn" href="/tasks">Tasks</a></li>
+                <li><a class="nav-btn" href="/completed">Completed tasks</a></li>
+                <li><a class="nav-btn nav-btn--active" href="/stats">View status</a></li>
+            </ul>
+        </nav>
+    </div>
 </header>
 
-<div class="card">
-    <h2>Overview</h2>
-    <div id="overview-kpis" class="kpis">
-        <div class="kpi"><div>Total</div><b id="kpi-total">—</b></div>
-        <div class="kpi"><div>Completed</div><b id="kpi-completed">—</b></div>
-        <div class="kpi"><div>Pending</div><b id="kpi-pending">—</b></div>
-        <div class="kpi"><div>Completion Rate</div><b id="kpi-rate">—</b></div>
-    </div>
-</div>
+<main class="wrapper">
+    <section class="section-card">
+        <h2><span class="pill-title">Overview</span></h2>
+        <div id="overview-kpis" class="kpis">
+            <div class="kpi"><div>Total</div><b id="kpi-total">—</b></div>
+            <div class="kpi"><div>Completed</div><b id="kpi-completed">—</b></div>
+            <div class="kpi"><div>Pending</div><b id="kpi-pending">—</b></div>
+            <div class="kpi"><div>Completion Rate</div><b id="kpi-rate">—</b></div>
+        </div>
+    </section>
 
-<div class="card">
-    <h3>By Category</h3>
-    <table id="bycat">
-        <thead>
-        <tr><th>Category</th><th>Count</th></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
+    <section class="section-card">
+        <h3><span class="pill-title">Remaining tasks by categories</span></h3>
+        <div style="overflow:auto;">
+            <table id="bycat">
+                <thead>
+                <tr><th>Category</th><th>Count</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+</main>
 
 <script>
     (function loadStats(){
       fetch('/api/statistics/overview')
         .then(r => r.json())
         .then(d => {
-          // KPIs
           document.getElementById('kpi-total').textContent     = d.total;
           document.getElementById('kpi-completed').textContent = d.completed;
           document.getElementById('kpi-pending').textContent   = d.pending;
-          document.getElementById('kpi-rate').textContent      = Math.round(d.completionRate * 100) + '%';
+          document.getElementById('kpi-rate').textContent      = Math.round((d.completionRate || 0) * 100) + '%';
 
-          // By Category
           const tbody = document.querySelector('#bycat tbody');
           tbody.innerHTML = '';
           const entries = Object.entries(d.byCategory || {});
@@ -72,11 +102,10 @@
           }
         })
         .catch(() => {
-          document.querySelector('.card').insertAdjacentHTML('beforeend',
-            '<div style="color:#c00;">Failed to load statistics.</div>');
+          const first = document.querySelector('.section-card');
+          first.insertAdjacentHTML('beforeend','<div style="color:#c00; margin-top:8px;">Failed to load statistics.</div>');
         });
     })();
 </script>
-
 </body>
 </html>

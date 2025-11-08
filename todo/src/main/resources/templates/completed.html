@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>To-Do | Tasks</title>
+    <title>To-Do | Completed</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css?family=Arimo:400,700" rel="stylesheet">
@@ -10,61 +10,32 @@
         body { background:#fafafa; }
         .wrapper { max-width: 980px; margin: 0 auto; padding: 0 16px; }
 
-        /* header */
         header { background:#fff; border-bottom:1px solid #eee; }
         .header-inner { display:flex; align-items:center; justify-content:space-between; padding:18px 0; }
         .brand { display:flex; align-items:center; }
         .brand-icon { height:32px; width:auto; margin-right:40px; border-radius:6px; display:block; }
         .brand a { text-decoration:none; color:#333; font-size:28px; font-weight:700; }
 
-        /* top-right nav buttons */
         #navigation { display:flex; gap:10px; }
-        .nav-btn {
-          display:inline-block; padding:10px 18px; border-radius:999px; font-weight:700; letter-spacing:.03em;
-          background:#2f7d5e; color:#fff; border:2px solid #2f7d5e; text-transform:uppercase;
-        }
+        .nav-btn { display:inline-block; padding:10px 18px; border-radius:999px; font-weight:700; letter-spacing:.03em;
+          background:#2f7d5e; color:#fff; border:2px solid #2f7d5e; text-transform:uppercase; }
         .nav-btn--active { background:#eaf7f1; color:#2d6a4f; border-color:#5dae87; }
 
-        /* cards & table */
         .section-card { background:#fff; border:1px solid #eee; border-radius:12px; padding:20px; margin:24px 0; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+
+        .pill-title{ display:inline-block; padding:6px 14px; border-radius:999px; background:#eaf7f1; border:1px solid #c7ead8; color:#2d6a4f; font-weight:700; font-size:28px; line-height:1.2; }
+        .section-card h2 { margin:0 0 12px 0; }
+
         table { width:100%; border-collapse: collapse; background:#fff; }
         th, td { padding:12px 14px; border-bottom:1px solid #eee; text-align:left; }
         th { background:#f8f9fb; font-weight:700; color:#444; }
         tr:hover td { background:#fcfcff; }
-
-        /* form row (inputs in one line) */
-        .form-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
-        .form-row input[type="text"],
-        .form-row input[type="datetime-local"],
-        .form-row select {
-          border:1px solid #ddd; border-radius:8px; padding:10px 12px; outline:none; background:#fff;
-        }
-        input[name="title"]{  width:180px; }
-        input[name="detail"]{ width:300px; }
-        select[name="categoryId"]{ width:160px; }
-        input[type="datetime-local"]{ width:180px; }
-
-        /* centered submit button on its own line */
-        .form-actions { width:100%; display:flex; justify-content:center; margin-top:12px; }
-        .form-actions .btn-primary { min-width:220px; }
 
         .btn { display:inline-block; padding:10px 18px; border-radius:999px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; }
         .btn-primary { background:#5dae87; border:2px solid #5dae87; color:#fff; }
         .btn-ghost { background:#fff; border:2px solid #5dae87; color:#5dae87; }
         .btn-danger { background:#ffefef; border:2px solid #f56c6c; color:#c0392b; }
         .btn-sm { padding:6px 12px; font-size:13px; }
-
-        /* pill titles */
-        .pill-title{
-          display:inline-block; padding:6px 14px; border-radius:999px;
-          background:#eaf7f1; border:1px solid #c7ead8; color:#2d6a4f;
-          font-weight:700; font-size:28px; line-height:1.2;
-        }
-        .section-card h2 { margin:0 0 12px 0; }
-
-        @media (max-width:1020px){
-          input[name="title"], input[name="detail"], select[name="categoryId"], input[type="datetime-local"]{ width:100%; }
-        }
     </style>
 </head>
 <body>
@@ -77,8 +48,8 @@
         </div>
         <nav>
             <ul id="navigation">
-                <li><a class="nav-btn nav-btn--active" href="/tasks">Tasks</a></li>
-                <li><a class="nav-btn" href="/completed">Completed tasks</a></li>
+                <li><a class="nav-btn" href="/tasks">Tasks</a></li>
+                <li><a class="nav-btn nav-btn--active" href="/completed">Completed tasks</a></li>
                 <li><a class="nav-btn" href="/stats">View status</a></li>
             </ul>
         </nav>
@@ -86,29 +57,9 @@
 </header>
 
 <main class="wrapper">
-    <!-- Create task -->
     <section class="section-card">
-        <h2><span class="pill-title">Create task</span></h2>
-        <form action="/ui/tasks" method="post">
-            <div class="form-row">
-                <input name="title"  placeholder="Title" required type="text" />
-                <input name="detail" placeholder="Detail" type="text" />
-                <select name="categoryId" aria-label="Category">
-                    <option value="">-- No Category --</option>
-                    <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}"></option>
-                </select>
-                <input type="datetime-local" name="dueAt" />
-            </div>
-            <!-- 居中按钮 -->
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Add</button>
-            </div>
-        </form>
-    </section>
+        <h2><span class="pill-title">Completed tasks</span></h2>
 
-    <!-- Tasks table: only show incomplete tasks -->
-    <section class="section-card">
-        <h2><span class="pill-title">Tasks</span></h2>
         <div style="overflow:auto; margin-top:12px;">
             <table>
                 <thead>
@@ -118,22 +69,22 @@
                     <th>Category</th>
                     <th style="min-width:200px;">Due At</th>
                     <th style="width:110px;">Completed</th>
-                    <th style="min-width:220px;">Actions</th>
+                    <th style="min-width:240px;">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <!-- 仅显示未完成任务 -->
-                <tr th:each="t, stat : ${tasks.?[!completed]}">
+                <!-- 仅显示已完成 -->
+                <tr th:each="t, stat : ${tasks.?[completed]}">
                     <td th:text="${stat.count}">1</td>
                     <td th:text="${t.title}">Sample</td>
                     <td th:text="${t.category != null ? t.category.name : '—'}">—</td>
                     <td th:text="${t.dueAt != null} ? ${#temporals.format(t.dueAt, 'MMM dd, yyyy HH:mm')} : '—'">—</td>
-                    <td>No</td>
+                    <td>Yes</td>
                     <td>
                         <form th:action="@{|/api/tasks/${t.id}/completed|}" method="post" style="display:inline-block;">
                             <input type="hidden" name="_method" value="patch"/>
-                            <input type="hidden" name="value" value="true"/>
-                            <button type="submit" class="btn btn-sm btn-primary">Complete</button>
+                            <input type="hidden" name="value" value="false"/>
+                            <button type="submit" class="btn btn-sm btn-ghost">Uncomplete</button>
                         </form>
                         <form th:action="@{|/api/tasks/${t.id}|}" method="post" onsubmit="return confirm('Delete?')" style="display:inline-block; margin-left:6px;">
                             <input type="hidden" name="_method" value="delete"/>
@@ -141,8 +92,8 @@
                         </form>
                     </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(tasks.?[!completed])}">
-                    <td colspan="6" style="color:#888;">No pending tasks.</td>
+                <tr th:if="${#lists.isEmpty(tasks.?[completed])}">
+                    <td colspan="6" style="color:#888;">No completed tasks.</td>
                 </tr>
                 </tbody>
             </table>
@@ -151,7 +102,6 @@
 </main>
 
 <script>
-    // PATCH / DELETE override
     document.querySelectorAll('form').forEach(f=>{
       if(f.querySelector('input[name="_method"]')){
         f.addEventListener('submit', e=>{
