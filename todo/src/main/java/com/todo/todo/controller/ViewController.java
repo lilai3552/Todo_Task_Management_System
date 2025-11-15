@@ -21,29 +21,29 @@ public class ViewController {
     private final TodoService todoService;
     private final CategoryService categoryService;
 
-    /** 默认首页：直接进入任务页（添加任务界面） */
+    /*task page as home page */
     @GetMapping({"/", "/tasks"})
     public String tasks(Model model, @ModelAttribute("msg") String msg) {
 
-        // 1️⃣ 获取任务列表
+        // extract tasks
         List<Task> tasks = todoService.listAll();
 
-        // 2️⃣ 在内存中按 dueAt 升序（最早的在前，null 放最后）
+        // sorting tasks
         tasks.sort(Comparator.comparing(
                 Task::getDueAt,
                 Comparator.nullsLast(Comparator.naturalOrder())
         ));
 
-        // 3️⃣ 放入模型
+        // modeling
         model.addAttribute("tasks", tasks);
         model.addAttribute("categories", categoryService.list());
 
         if (msg != null && !msg.isBlank()) model.addAttribute("msg", msg);
 
-        return "tasks"; // 对应 templates/tasks.html
+        return "tasks";
     }
 
-    /** 统计页 */
+    /*stats page */
     @GetMapping("/stats")
     public String statsPage() {
         return "stats";
