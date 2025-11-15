@@ -15,7 +15,6 @@ public class TodoApplication {
         SpringApplication.run(TodoApplication.class, args);
     }
 
-    /** 启动时确保 6 个分类存在（不存在就创建） */
     @Bean
     public org.springframework.boot.CommandLineRunner seedCategories(CategoryRepository categoryRepository) {
         return args -> {

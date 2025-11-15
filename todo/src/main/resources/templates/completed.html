@@ -73,7 +73,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <!-- 仅显示已完成 -->
+                <!-- only display completed tasks -->
                 <tr th:each="t, stat : ${tasks.?[completed]}">
                     <td th:text="${stat.count}">1</td>
                     <td th:text="${t.title}">Sample</td>
